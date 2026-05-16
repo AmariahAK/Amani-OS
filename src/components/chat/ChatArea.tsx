@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useAppStore } from "../../store/appStore";
 import { messagesToChatTurns, mergeAssistantTurn, turnHasContent } from "../../utils/chatTurns";
 import { getMessageText } from "../../utils/exchanges";
+import { stripInternalDocumentContext } from "../../utils/messageDisplay";
 import { MessageBubble } from "./MessageBubble";
 import { AssistantTurnBubble } from "./AssistantTurnBubble";
 import { WelcomeScreen } from "./WelcomeScreen";
@@ -15,6 +16,7 @@ export function ChatArea() {
   const activeTool = useAppStore((s) => s.activeTool);
   const editUserMessage = useAppStore((s) => s.editUserMessage);
   const showToast = useAppStore((s) => s.showToast);
+  const sessionAttachments = useAppStore((s) => s.sessionAttachments);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const turns = messagesToChatTurns(messages, 20);
@@ -58,11 +60,15 @@ export function ChatArea() {
                   <MessageBubble
                     message={turn.user}
                     role="user"
+                    sessionAttachments={sessionAttachments}
                     onEdit={(newText) => {
                       const idx = findMessageIndex(turn.user!);
                       if (idx >= 0) void editUserMessage(idx, newText);
                     }}
-                    onCopy={() => void copyText(getMessageText(turn.user!), "Copied message")}
+                    onCopy={() => {
+                      const visible = stripInternalDocumentContext(getMessageText(turn.user!));
+                      void copyText(visible, "Copied message");
+                    }}
                   />
                 )}
                 {(turn.assistants.length > 0 || inProgress) && (

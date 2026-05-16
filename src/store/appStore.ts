@@ -28,6 +28,9 @@ import {
 import { PROVIDER_LABELS } from "../constants/providers";
 import { buildSystemPrompt } from "../agent/systemPrompt";
 import { titleFromMessages } from "../utils/sessionTitle";
+import type { MessageAttachment, SessionAttachments } from "../types/attachments";
+import { DOCUMENT_CONTEXT_HEADER, extractDocumentText } from "../lib/extractDocument";
+import { inferMimeType } from "../utils/messageDisplay";
 
 const SUGGESTED = [
   "Grace missed her contribution in Jan, what is the penalty?",
@@ -50,7 +53,9 @@ interface AppState {
   historyOpen: boolean;
   agent: Agent | null;
   draft: string;
-  pendingAttachment: { fileName: string; mimeType: string; base64: string } | null;
+  pendingAttachment: MessageAttachment | null;
+  pendingAttachBind: MessageAttachment | null;
+  sessionAttachments: SessionAttachments;
   init: () => void;
   newChat: () => void;
   loadSession: (id: string) => void;
@@ -72,22 +77,37 @@ interface AppState {
 
 let toastHideTimer: ReturnType<typeof setTimeout> | undefined;
 
-function persistMessages(sessionId: string, messages: AgentMessage[], title?: string) {
-  updateSession(sessionId, { messages, ...(title ? { title } : {}) });
+function persistSession(
+  sessionId: string,
+  messages: AgentMessage[],
+  attachments: SessionAttachments,
+  title?: string,
+) {
+  updateSession(sessionId, { messages, attachments, ...(title ? { title } : {}) });
 }
 
 export const useAppStore = create<AppState>((set, get) => {
   const agentCallbacks: AgentCallbacks = {
     onMessagesChange: (messages) => {
-      const { activeSessionId } = get();
+      const { activeSessionId, pendingAttachBind } = get();
+      let attachments = { ...get().sessionAttachments };
+
+      if (activeSessionId && pendingAttachBind) {
+        const lastUser = [...messages].reverse().find((m) => m.role === "user");
+        if (lastUser) {
+          attachments[String(lastUser.timestamp)] = pendingAttachBind;
+          set({ pendingAttachBind: null, sessionAttachments: attachments });
+        }
+      }
+
       set({ messages });
       if (activeSessionId) {
-        persistMessages(activeSessionId, messages);
+        persistSession(activeSessionId, messages, attachments);
         const session = getSession(activeSessionId);
         if (session && session.title === "New dispute") {
           const title = titleFromMessages(messages);
           if (title) {
-            updateSession(activeSessionId, { title });
+            updateSession(activeSessionId, { title, messages, attachments });
             set({ sessions: getAllSessions() });
           }
         }
@@ -129,6 +149,8 @@ export const useAppStore = create<AppState>((set, get) => {
     agent: null,
     draft: "",
     pendingAttachment: null,
+    pendingAttachBind: null,
+    sessionAttachments: {},
     suggestedPrompts: SUGGESTED,
 
     init: () => {
@@ -153,6 +175,7 @@ export const useAppStore = create<AppState>((set, get) => {
         sessions,
         activeSessionId: activeId,
         messages: active.messages,
+        sessionAttachments: active.attachments ?? {},
         agent,
         settingsOpen: !isAppConfigured(),
         settingsHint: !isAppConfigured()
@@ -169,6 +192,7 @@ export const useAppStore = create<AppState>((set, get) => {
         sessions: getAllSessions(),
         activeSessionId: s.id,
         messages: [],
+        sessionAttachments: {},
         draft: "",
         budgetWarning: null,
       });
@@ -181,13 +205,14 @@ export const useAppStore = create<AppState>((set, get) => {
       if (streaming) agent?.abort();
       if (activeSessionId && activeSessionId !== id) {
         const current = getSession(activeSessionId);
-        if (current) persistMessages(activeSessionId, get().messages);
+        if (current) persistSession(activeSessionId, get().messages, get().sessionAttachments);
       }
       setActiveSession(id);
       if (agent) agent.state.messages = session.messages;
       set({
         activeSessionId: id,
         messages: session.messages,
+        sessionAttachments: session.attachments ?? {},
         historyOpen: false,
         streaming: false,
         activeTool: null,
@@ -233,27 +258,21 @@ export const useAppStore = create<AppState>((set, get) => {
 
       set({ streamError: null });
 
-      let content = text.trim();
+      let agentPayload = text.trim();
       if (pendingAttachment) {
-        const readTool = agent.state.tools?.find((t) => t.name === "read_document");
-        let extracted = "";
-        if (readTool?.execute) {
-          const result = await readTool.execute("attach", {
-            fileName: pendingAttachment.fileName,
-            mimeType: pendingAttachment.mimeType,
-            contentBase64: pendingAttachment.base64,
-          });
-          extracted = result.content
-            .filter((c) => c.type === "text")
-            .map((c) => c.text)
-            .join("");
-        }
-        content += `\n\n[Attached: ${pendingAttachment.fileName}]\n${extracted.slice(0, 8000)}`;
-        set({ pendingAttachment: null });
+        const extracted = await extractDocumentText(pendingAttachment);
+        const byteSize = Math.floor((pendingAttachment.base64.length * 3) / 4);
+        const attach: MessageAttachment = {
+          ...pendingAttachment,
+          mimeType: inferMimeType(pendingAttachment.fileName, pendingAttachment.mimeType),
+          byteSize: byteSize || pendingAttachment.byteSize,
+        };
+        agentPayload += `${DOCUMENT_CONTEXT_HEADER}File: ${pendingAttachment.fileName}\n\n${extracted.slice(0, 12_000)}`;
+        set({ pendingAttachment: null, pendingAttachBind: attach });
       }
 
       try {
-        await runPromptWithBudget(agent, content, async () => {
+        await runPromptWithBudget(agent, agentPayload, async () => {
           const summaryPrompt = `Compress this chama dispute conversation into at most 10 sentences covering: (1) dispute parties and claims, (2) bylaws cited, (3) transaction findings, (4) open questions. Conversation:\n${JSON.stringify(agent.state.messages.slice(-20))}`;
           await agent.prompt(summaryPrompt);
           const last = agent.state.messages[agent.state.messages.length - 1];
@@ -298,7 +317,7 @@ export const useAppStore = create<AppState>((set, get) => {
       const msgs = [...agent.state.messages];
       const truncated = msgs.slice(0, messageIndex);
       agent.state.messages = truncated;
-      persistMessages(activeSessionId, truncated);
+      persistSession(activeSessionId, truncated, get().sessionAttachments);
       set({ messages: truncated, streamError: null });
       try {
         await runPromptWithBudget(agent, newText.trim(), async () => {

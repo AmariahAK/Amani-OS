@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { Paperclip, Send, Square } from "lucide-react";
 import { useAppStore } from "../../store/appStore";
+import { AttachmentCard } from "./AttachmentCard";
+import { inferMimeType } from "../../utils/messageDisplay";
 import { loadSettings } from "../../storage/settings";
 import { getModel } from "@mariozechner/pi-ai";
 
@@ -50,8 +52,9 @@ export function Composer() {
     const base64 = await fileToBase64(file);
     setPendingAttachment({
       fileName: file.name,
-      mimeType: file.type,
+      mimeType: inferMimeType(file.name, file.type),
       base64,
+      byteSize: file.size,
     });
     e.target.value = "";
   };
@@ -60,10 +63,15 @@ export function Composer() {
     <div className="shrink-0 border-t px-4 py-4 md:px-8" style={{ borderColor: "var(--color-border)", background: "var(--color-surface)" }}>
       <div className="mx-auto max-w-2xl">
         {pendingAttachment && (
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs" style={{ background: "var(--color-clause)" }}>
-            {pendingAttachment.fileName}
-            <button type="button" onClick={() => setPendingAttachment(null)} aria-label="Remove attachment">
-              ×
+          <div className="mb-3">
+            <AttachmentCard attachment={pendingAttachment} compact />
+            <button
+              type="button"
+              className="mt-1 text-xs underline opacity-70"
+              style={{ color: "var(--color-muted)" }}
+              onClick={() => setPendingAttachment(null)}
+            >
+              Remove attachment
             </button>
           </div>
         )}

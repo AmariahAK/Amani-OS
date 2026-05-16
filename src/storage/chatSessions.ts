@@ -1,4 +1,5 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
+import type { SessionAttachments } from "../types/attachments";
 
 const STORAGE_KEY = "amani-os:sessions:v1";
 const ACTIVE_KEY = "amani-os:active-session";
@@ -9,6 +10,7 @@ export interface ChatSession {
   createdAt: number;
   updatedAt: number;
   messages: AgentMessage[];
+  attachments?: SessionAttachments;
   model?: { provider: string; modelId: string };
 }
 
@@ -92,7 +94,7 @@ export function createSession(): ChatSession {
 
 export function updateSession(
   id: string,
-  patch: Partial<Pick<ChatSession, "title" | "messages" | "model">>,
+  patch: Partial<Pick<ChatSession, "title" | "messages" | "attachments" | "model">>,
 ): ChatSession | undefined {
   const store = loadStore();
   const idx = store.sessions.findIndex((s) => s.id === id);

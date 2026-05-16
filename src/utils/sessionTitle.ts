@@ -1,5 +1,6 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import { getMessageText } from "./exchanges";
+import { stripInternalDocumentContext } from "./messageDisplay";
 
 export function autoTitle(text: string): string {
   const t = text.trim().slice(0, 48);
@@ -9,7 +10,7 @@ export function autoTitle(text: string): string {
 export function titleFromMessages(messages: AgentMessage[]): string | null {
   const firstUser = messages.find((m) => m.role === "user");
   if (!firstUser) return null;
-  const text = getMessageText(firstUser).trim();
+  const text = stripInternalDocumentContext(getMessageText(firstUser)).trim();
   return text ? autoTitle(text) : null;
 }
 
