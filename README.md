@@ -157,14 +157,6 @@ The footer shows which model you selected. Always **verify arbitration decisions
 | | |
 |---|---|
 | **Live app** | [https://amani-os-885974230787.europe-west1.run.app/](https://amani-os-885974230787.europe-west1.run.app/) |
-| **Demo video** | _Add your YouTube/Loom link here before judging_ |
-
-**Screenshots** (add under `docs/screenshots/` and embed here):
-
-- Welcome screen — Karibu, Treasurer + Chama Context (bylaws + M-Pesa loaded)
-- Dispute chat with bylaw citations and penalty table
-- Tool activity (searching bylaws / querying transactions)
-- Setup — provider, API key, model picker
 
 ---
 
@@ -173,10 +165,10 @@ The footer shows which model you selected. Always **verify arbitration decisions
 | Name | Role |
 |------|------|
 | **Amariah Kamau** | Lead developer — agent integration, UI, deployment, demo data |
-| _Add teammate_ | _Role_ |
-| _Add teammate_ | _Role_ |
-
-_GitHub: [@AmariahAK](https://github.com/AmariahAK)_
+| **Tyra Kimani**| Analyst |
+| **McGrath** | software developer|
+| **Juma** | data engineer|
+| _**John Alexander Kamau**_ | UX/UI Designer & Developer |
 
 ---
 
