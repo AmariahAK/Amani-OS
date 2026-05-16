@@ -1,77 +1,230 @@
 # Amani OS — Chama Dispute Arbitrator
 
-Amani OS is a React web UI that helps **Amani Investment Chama** treasurers mediate member disputes using an LLM with RAG over bylaws, mock M-Pesa records, and contribution data. It supports **English, Kiswahili, and Sheng**.
+**Live demo:** [https://amani-os-885974230787.europe-west1.run.app/](https://amani-os-885974230787.europe-west1.run.app/)
 
-Built on [@mariozechner/pi-agent-core](https://github.com/badlogic/pi-mono) and [@mariozechner/pi-ai](https://github.com/badlogic/pi-mono) (patterns from pi-web-ui), with a custom React interface and Amani brand colors.
+> **Hackathon track:** Challenge 02 — The Chama Dispute Arbitrator  
+> Kenya has 300,000+ registered chamas. Billions of shillings move through them every year. The biggest threat is not bad investments — it is **unresolved fights between members**. Amani OS gives the treasurer an AI mediator that cites the chama’s own bylaws and payment records, in English, Kiswahili, or Sheng.
 
-## Features
+---
 
-- **Dispute arbitration** — cites bylaws (Article 7 workflow), M-Pesa Paybill 247247 mock data, member register
-- **Multilingual** — responds in the user's language
-- **Markdown + artifacts** — tables and Recharts charts with Excel/PDF/PNG export
-- **Tools** — `search_bylaws`, `query_transactions`, `get_member_register`, `read_document`, `web_search`, `get_current_datetime`, `count_tokens`, `compress_context`
-- **Token budget** — warns at 75% context, forces compression at 90%
-- **Chat sessions** — localStorage persistence, history sidebar (rename/delete), last 7 exchanges in view
-- **Streaming** — stop button, thinking blocks, copy/edit prompts
-- **Settings** — API keys (browser-only), provider/model picker, CORS proxy
+## The problem we are solving
 
-## Color palette
+When two members clash — late M-Pesa contributions, loan defaults, meeting absences, expulsion votes — the treasurer is stuck in the middle. They are not a lawyer. Arguments get emotional. WhatsApp threads go in circles. The committee meeting gets heated, and sometimes the dispute never gets a clear ruling tied to the bylaws.
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| Deep Green | `#2D5016` | Navbar, headers |
-| Terracotta | `#C1440E` | Dispute cards, rulings |
-| Warm Amber | `#E8A838` | Bylaw clause badges |
-| Sage | `#7A9E5F` | Resolved states |
-| Cream | `#F5EDD8` | Background |
+**Amani OS** is an AI arbitration assistant a chama treasurer can open when things get heated. It:
 
-## Setup
+- Reads the chama’s **bylaws** and cites the right articles (e.g. Article 3.3 penalties, Article 7 dispute process).
+- Checks **M-Pesa / contribution records** (demo Paybill 247247 data in this build).
+- Looks up the **member register** (status, missed months, roles).
+- Answers in the **same language the treasurer uses** — English, Kiswahili, or Sheng.
+- Produces structured **rulings** and tables the committee can review.
+
+This repository is a working prototype for **Amani Investment Chama** (synthetic demo data). It is not legal advice; rulings should always be verified by humans before action.
+
+---
+
+## Agent architecture
+
+Amani OS uses a **single orchestrator agent** (not a multi-agent swarm). One agent loop plans, calls tools, and streams the final answer to the UI.
+
+```mermaid
+flowchart TB
+  subgraph ui [React UI - Vite]
+    Chat[Chat + Composer]
+    Ctx[Chama Context panel]
+    Setup[Setup - provider / API key / model]
+  end
+
+  subgraph agent [pi-agent-core Agent]
+    SP[System prompt + skills/*.md]
+    Loop[Agent loop - stream / tools / retry]
+  end
+
+  subgraph tools [Chama tools]
+    B[search_bylaws - RAG]
+    T[query_transactions]
+    M[get_member_register]
+    D[read_document - PDF/txt/md]
+    W[web_search]
+    DT[get_current_datetime]
+    TK[count_tokens / compress_context]
+  end
+
+  subgraph llm [pi-ai - multi-provider]
+    Gemini[Google Gemini - recommended]
+    Other[OpenAI / Anthropic / Groq / OpenRouter ...]
+  end
+
+  subgraph data [Bundled demo data]
+    PDF[docs/amani_chama_bylaws.pdf]
+    Chunks[src/data/bylaws_chunks.json]
+    Tx[src/data/transactions.json]
+    Mem[src/data/members.json]
+  end
+
+  Chat --> Loop
+  Setup --> llm
+  Loop --> SP
+  Loop --> tools
+  Loop --> llm
+  B --> Chunks
+  T --> Tx
+  M --> Mem
+  D --> PDF
+```
+
+| Layer | Role |
+|--------|------|
+| **UI** | Treasurer-facing chat, history, settings, markdown + chart artifacts |
+| **Agent** | [@mariozechner/pi-agent-core](https://github.com/badlogic/pi-mono) — streaming, tool execution, session state |
+| **LLM** | [@mariozechner/pi-ai](https://github.com/badlogic/pi-mono) — provider-agnostic; **Gemini** recommended for Kiswahili/Sheng |
+| **RAG** | Bylaws chunked in `bylaws_chunks.json`; `search_bylaws` scores and returns relevant clauses |
+| **Skills** | Markdown playbooks in [`skills/`](skills/) (identity, arbitration workflow, visualization, per-tool guides) |
+| **Storage** | Chat sessions + API keys in **browser localStorage** only |
+
+### Tools (how the agent “communicates” with data)
+git 
+| Tool | What it does |
+|------|----------------|
+| `search_bylaws` | Keyword/article search over ingested bylaws |
+| `query_transactions` | Filter mock M-Pesa rows by member, month, penalties |
+| `get_member_register` | Member list, roles, consecutive miss notes |
+| `read_document` | Extract text from uploaded PDF / .txt / .md |
+| `get_current_datetime` | Nairobi timezone for deadlines |
+| `web_search` | Optional external context (e.g. Co-operative Societies Act) |
+| `count_tokens` / `compress_context` | Long dispute threads — warn at 75%, compress at 90% |
+
+There is **no separate “mediator” and “researcher” agent**. The same agent decides when to call tools, waits for results, and continues streaming the reply in **one merged message bubble** in the UI.
+
+---
+
+## How to run locally
+
+**Requirements:** Node.js 20+, npm
 
 ```bash
+git clone https://github.com/AmariahAK/Amani-OS.git
+cd Amani-OS
 npm install
-npm run ingest   # optional: refresh bylaws chunks from PDF
 npm run dev
 ```
 
-Open the app, click **Settings**, and add an API key for your chosen provider (e.g. **Google Gemini** recommended for Kiswahili/Sheng).
+Open [http://localhost:5173](http://localhost:5173).
 
-### Supported providers (browser)
+1. **Setup** opens automatically on first visit.
+2. Choose a **provider** (e.g. **Google** for Gemini).
+3. Paste your **API key** (stored only in your browser).
+4. Pick a **model** (e.g. `gemini-2.0-flash`).
+5. Click **Save & start**.
 
-OpenAI, Anthropic, Google (Gemini), xAI (Grok), Groq, OpenRouter, Mistral. **Amazon Bedrock** requires a server runtime and is not available in-browser.
+Optional:
 
-### Security note
+```bash
+npm run ingest   # refresh bylaws_chunks.json from docs/amani_chama_bylaws.pdf (needs pdftotext)
+npm run build    # production build
+npm run preview  # serve dist locally
+```
 
-API keys are stored in **localStorage** in your browser only. Do not use on shared machines for production secrets.
+### Docker (same image as Cloud Run)
 
-## Mock data
+```bash
+docker build -t amani-os .
+docker run -p 8080:8080 amani-os
+# → http://localhost:8080
+```
 
-Transaction and member data in `src/data/` is **synthetic/demo** data aligned with [docs/amani_chama_bylaws.pdf](docs/amani_chama_bylaws.pdf). It is not live M-Pesa integration.
+---
+
+## How to interact with the deployed version
+
+**URL:** [https://amani-os-885974230787.europe-west1.run.app/](https://amani-os-885974230787.europe-west1.run.app/)
+
+1. Open the link in Chrome or Firefox (desktop recommended).
+2. Complete **Setup** with your own API key for the provider you choose. Keys are **not** stored on our server — only in your browser.
+3. On the welcome screen, try a suggested prompt, for example:
+   - *“Grace missed her contribution in Jan, what is the penalty?”*
+   - *“Brian claims he doesn't owe any penalty. What do the bylaws say?”*
+4. Or type in **Swahili / Sheng**, e.g. *“Nilichelewa kwa chama, nini itafanyika?”*
+5. Attach a **PDF** (bylaws excerpt or evidence) with the paperclip — text is extracted in the browser.
+6. Use **History** (sidebar) to switch past disputes. Use **+** for a new chat.
+
+The footer shows which model you selected. Always **verify arbitration decisions with the full committee** before fines or expulsion.
+
+---
+
+## Screenshots & demo
+
+| | |
+|---|---|
+| **Live app** | [https://amani-os-885974230787.europe-west1.run.app/](https://amani-os-885974230787.europe-west1.run.app/) |
+| **Demo video** | _Add your YouTube/Loom link here before judging_ |
+
+**Screenshots** (add under `docs/screenshots/` and embed here):
+
+- Welcome screen — Karibu, Treasurer + Chama Context (bylaws + M-Pesa loaded)
+- Dispute chat with bylaw citations and penalty table
+- Tool activity (searching bylaws / querying transactions)
+- Setup — provider, API key, model picker
+
+---
+
+## Team
+
+| Name | Role |
+|------|------|
+| **Amariah Kamau** | Lead developer — agent integration, UI, deployment, demo data |
+| _Add teammate_ | _Role_ |
+| _Add teammate_ | _Role_ |
+
+_GitHub: [@AmariahAK](https://github.com/AmariahAK)_
+
+---
+
+## Stack alignment (Challenge 02 brief)
+
+| Suggested | How Amani OS implements it |
+|-----------|----------------------------|
+| Vertex AI / Gemini multilingual | **Google Gemini** via `pi-ai` (primary recommendation in Setup) |
+| RAG | Bylaws chunks + `search_bylaws` tool |
+| ADK-style agent | `pi-agent-core` agent loop + tools + skills |
+| M-Pesa / records | Mock Paybill 247247 dataset; real API = future work |
+
+---
+
+## Data & security notes
+
+- **Demo data only** — `src/data/transactions.json`, `members.json`, and bylaws are synthetic or bundled for **Amani Investment Chama** demo purposes.
+- **API keys** — entered in Setup, saved in **localStorage** on the client. Never sent to our Cloud Run container.
+- **Neutrality** — the agent is instructed to cite bylaws and records, not take sides; treasurers must confirm outcomes in committee.
+
+---
+
+## Project structure
+
+```
+src/
+  agent/          # Agent factory, system prompt, token budget
+  tools/          # Bylaws RAG, transactions, PDF read, etc.
+  components/     # Chat UI, settings, history, artifacts
+  data/           # Demo bylaws chunks, members, transactions
+skills/           # Agent behavior markdown
+docs/             # PDF bylaws source
+Dockerfile        # Cloud Run (nginx + static build)
+cloudbuild.yaml   # GCP build & deploy
+```
+
+---
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Production build |
-| `npm run ingest` | Regenerate `bylaws_chunks.json` from PDF (requires `pdftotext`) |
+| `npm run dev` | Dev server (copies PDF.js worker automatically) |
+| `npm run build` | Typecheck + Vite production build |
+| `npm run ingest` | Regenerate `bylaws_chunks.json` from PDF |
+| `docker build -t amani-os .` | Container image for Cloud Run |
 
-## Architecture
-
-```
-React UI → pi-agent-core Agent → pi-ai (multi-provider) → LLM
-                ↓
-         Tools + localStorage sessions + skills/*.md
-```
-
-## Skills
-
-Agent behavior is guided by markdown skills in [`skills/`](skills/): identity, arbitration workflow, visualization, and per-tool guides.
-
-## Future
-
-- [A2UI](https://a2ui.org) structured UI protocol (optional; markdown is primary today)
-- Vertex AI / server-side RAG
-- Real M-Pesa API
+---
 
 ## License
 
