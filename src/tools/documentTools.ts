@@ -1,13 +1,9 @@
 import { Type } from "typebox";
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import * as pdfjs from "pdfjs-dist";
+import "../lib/pdfWorker";
 import { textResult } from "./helpers";
 import { loadSettings } from "../storage/settings";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
 
 export async function extractPdfText(base64: string): Promise<string> {
   const binary = atob(base64);
