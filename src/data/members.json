@@ -1,0 +1,14 @@
+[
+  {"no": 1, "fullName": "Grace Wanjiku Kariuki", "phone": "0712 345 678", "joinDate": "Mar 2021", "status": "Active", "role": "Chairperson"},
+  {"no": 2, "fullName": "David Otieno Ochieng", "phone": "0723 456 789", "joinDate": "Mar 2021", "status": "Active", "role": "Treasurer"},
+  {"no": 3, "fullName": "Fatuma Hassan Abdi", "phone": "0734 567 890", "joinDate": "Mar 2021", "status": "Active", "role": "Secretary"},
+  {"no": 4, "fullName": "Peter Kamau Njoroge", "phone": "0745 678 901", "joinDate": "Mar 2021", "status": "Active", "role": null},
+  {"no": 5, "fullName": "Mary Wambui Gitau", "phone": "0756 789 012", "joinDate": "Jun 2021", "status": "Active", "role": null},
+  {"no": 6, "fullName": "James Omondi Akinyi", "phone": "0767 890 123", "joinDate": "Sep 2021", "status": "Active", "role": "Investment Officer"},
+  {"no": 7, "fullName": "Amina Said Mohammed", "phone": "0778 901 234", "joinDate": "Jan 2022", "status": "Active", "role": null},
+  {"no": 8, "fullName": "Kevin Otieno Oduor", "phone": "0789 012 345", "joinDate": "Mar 2022", "status": "Active", "role": null},
+  {"no": 9, "fullName": "Beatrice Njeri Muthoni", "phone": "0790 123 456", "joinDate": "Jun 2022", "status": "Active", "role": null},
+  {"no": 10, "fullName": "Samuel Kimani Waweru", "phone": "0701 234 567", "joinDate": "Sep 2022", "status": "Active", "role": null},
+  {"no": 11, "fullName": "Lilian Auma Were", "phone": "0702 345 678", "joinDate": "Jan 2023", "status": "Active", "role": null},
+  {"no": 12, "fullName": "Brian Kipchoge Mutai", "phone": "0703 456 789", "joinDate": "Jun 2023", "status": "Active", "role": null, "notes": "Missed Jan 2024 contribution — 1st consecutive"}
+]

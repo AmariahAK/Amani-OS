@@ -1,0 +1,22 @@
+[
+  {"member": "Grace Wanjiku Kariuki", "mpesaRef": "QKL7823HJP", "amount": 5000, "date": "2024-01-05", "time": "09:12", "penalty": null, "month": "2024-01"},
+  {"member": "David Otieno Ochieng", "mpesaRef": "QKM9934KLQ", "amount": 5000, "date": "2024-01-03", "time": "11:45", "penalty": null, "month": "2024-01"},
+  {"member": "Fatuma Hassan Abdi", "mpesaRef": "QKN1045MNR", "amount": 5000, "date": "2024-01-04", "time": "08:30", "penalty": null, "month": "2024-01"},
+  {"member": "Peter Kamau Njoroge", "mpesaRef": "QKO2156NOS", "amount": 5000, "date": "2024-01-05", "time": "14:22", "penalty": null, "month": "2024-01"},
+  {"member": "Mary Wambui Gitau", "mpesaRef": "QKP3267OPT", "amount": 5000, "date": "2024-01-02", "time": "10:05", "penalty": null, "month": "2024-01"},
+  {"member": "James Omondi Akinyi", "mpesaRef": "QKQ4378PQU", "amount": 5000, "date": "2024-01-05", "time": "16:18", "penalty": null, "month": "2024-01"},
+  {"member": "Amina Said Mohammed", "mpesaRef": "QKR5489QRV", "amount": 5000, "date": "2024-01-04", "time": "12:40", "penalty": null, "month": "2024-01"},
+  {"member": "Kevin Otieno Oduor", "mpesaRef": "QKS6590RSW", "amount": 5000, "date": "2024-01-05", "time": "16:33", "penalty": null, "month": "2024-01"},
+  {"member": "Beatrice Njeri Muthoni", "mpesaRef": "QKT7601STX", "amount": 5000, "date": "2024-01-12", "time": "13:17", "penalty": 500, "month": "2024-01", "penaltyReason": "Late (6th–15th) per Art 3.3"},
+  {"member": "Samuel Kimani Waweru", "mpesaRef": "QKU8712TUY", "amount": 5000, "date": "2024-01-01", "time": "07:50", "penalty": null, "month": "2024-01"},
+  {"member": "Lilian Auma Were", "mpesaRef": "QKV9823UVZ", "amount": 5000, "date": "2024-01-05", "time": "15:28", "penalty": null, "month": "2024-01"},
+  {"member": "Brian Kipchoge Mutai", "mpesaRef": null, "amount": 0, "date": null, "time": null, "penalty": null, "month": "2024-01", "status": "NOT PAID", "notes": "Missed — 1st consecutive"},
+  {"member": "Brian Kipchoge Mutai", "mpesaRef": "QKW1094VXA", "amount": 5000, "date": "2024-02-08", "time": "10:15", "penalty": 500, "month": "2024-02", "penaltyReason": "Late (6th–15th) per Art 3.3"},
+  {"member": "Beatrice Njeri Muthoni", "mpesaRef": "QKX2105WYB", "amount": 5000, "date": "2024-02-04", "time": "09:00", "penalty": null, "month": "2024-02"},
+  {"member": "Grace Wanjiku Kariuki", "mpesaRef": "QKY3216XZC", "amount": 5000, "date": "2024-02-03", "time": "08:45", "penalty": null, "month": "2024-02"},
+  {"member": "Brian Kipchoge Mutai", "mpesaRef": null, "amount": 0, "date": null, "time": null, "penalty": null, "month": "2024-03", "status": "NOT PAID", "notes": "Missed — 2nd consecutive"},
+  {"member": "Peter Kamau Njoroge", "mpesaRef": "QKZ4327YAD", "amount": 15000, "date": "2024-03-10", "time": "11:00", "penalty": null, "month": "2024-03", "notes": "Loan repayment installment"},
+  {"member": "Brian Kipchoge Mutai", "mpesaRef": null, "amount": 0, "date": null, "time": null, "penalty": null, "month": "2024-04", "status": "NOT PAID", "notes": "Missed — 3rd consecutive, expulsion review per Art 2.5"},
+  {"member": "Grace Wanjiku Kariuki", "mpesaRef": "QKA5438ZBE", "amount": 5000, "date": "2024-04-05", "time": "09:30", "penalty": null, "month": "2024-04"},
+  {"member": "David Otieno Ochieng", "mpesaRef": "QKB6549ACF", "amount": 5000, "date": "2024-05-04", "time": "10:00", "penalty": null, "month": "2024-05"}
+]

@@ -1,0 +1,21 @@
+[
+  {"id": "art-1", "article": "1", "title": "Name, Registered Office & Objectives", "text": "The group shall be known as Amani Investment Chama. Registered office Nairobi, Kenya. Objectives: pool savings for collective investment; provide emergency loans; build financial literacy."},
+  {"id": "art-2", "article": "2", "title": "Membership", "text": "Maximum 12 active members. Admission fee Ksh 2,000. Exit requires 3 months written notice. Expulsion by 3/4 majority for: three consecutive missed contributions, fraud, or prejudicial conduct."},
+  {"id": "art-3-1", "article": "3.1", "title": "Monthly Contribution", "text": "Each member shall contribute Ksh 5,000 on or before the 5th day of every month."},
+  {"id": "art-3-2", "article": "3.2", "title": "Payment Method", "text": "All contributions via M-Pesa Paybill No. 247247, account number = member full registered name."},
+  {"id": "art-3-3", "article": "3.3", "title": "Late Payment Penalty", "text": "Contributions between 6th and 15th attract penalty Ksh 500."},
+  {"id": "art-3-4", "article": "3.4", "title": "Very Late Payment Penalty", "text": "Contributions after 15th attract penalty Ksh 1,000 in addition to standard contribution."},
+  {"id": "art-3-5", "article": "3.5", "title": "Non-Payment", "text": "Failure to contribute by month end = missed contribution. Three consecutive missed contributions triggers automatic expulsion review under Article 2.5."},
+  {"id": "art-4", "article": "4", "title": "Loans", "text": "Eligibility: 6 months active, no penalties. Max loan 3x personal savings. Interest 10% p.a. reducing balance. Repayment within 12 months. Two guarantors required. Default after 2 missed repayments — guarantors jointly liable. Emergency loans up to Ksh 10,000 at 5%, 3 months, Chair + Treasurer approval."},
+  {"id": "art-5", "article": "5", "title": "Governance", "text": "Officials: Chairperson, Vice-Chair, Secretary, Treasurer, Investment Officer — 2 year terms, max 2 consecutive. Removal by 2/3 at special meeting."},
+  {"id": "art-6", "article": "6", "title": "Meetings", "text": "Monthly meeting last Saturday 10:00 AM. Quorum 7 members including 2 officials. AGM each January. Three consecutive unexcused absences fined Ksh 500 per meeting from fourth onward."},
+  {"id": "art-7-1", "article": "7.1", "title": "Internal Resolution", "text": "All disputes referred to Chairperson for mediation within 14 days of dispute arising."},
+  {"id": "art-7-2", "article": "7.2", "title": "Committee Hearing", "text": "If mediation fails, dispute committee (Chair, Secretary, one elected member) hears within 30 days."},
+  {"id": "art-7-3", "article": "7.3", "title": "Binding Decision", "text": "Committee decision binding. Aggrieved party may appeal to full general meeting within 7 days."},
+  {"id": "art-7-4", "article": "7.4", "title": "External Arbitration", "text": "Unresolved disputes referred to Co-operative Societies Tribunal under Cap 490."},
+  {"id": "art-7-5a", "article": "7.5(a)", "title": "Late Contribution Dispute", "text": "Member provides M-Pesa confirmation. Treasurer verifies date on Paybill statement. Penalty per Article 3.3 or 3.4 based on verified date."},
+  {"id": "art-7-5b", "article": "7.5(b)", "title": "Loan Default Dispute", "text": "Treasurer presents repayment schedule and M-Pesa records. Member presents counter-evidence. Committee rules within 7 days."},
+  {"id": "art-7-5c", "article": "7.5(c)", "title": "Investment Loss Dispute", "text": "Investment Officer presents proposal, minutes, vote record. Losses shared proportionally."},
+  {"id": "art-7-5d", "article": "7.5(d)", "title": "Expulsion Dispute", "text": "Written notice and right to address general meeting before expulsion confirmed."},
+  {"id": "art-8", "article": "8", "title": "Financial Management", "text": "Bank withdrawals above Ksh 10,000 require Treasurer and Chair signatures. Monthly financial reports. Annual audit. No single investment above 40% of funds without 3/4 majority."}
+]
